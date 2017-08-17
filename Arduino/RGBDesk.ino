@@ -8,7 +8,7 @@
 Adafruit_NeoPixel leds = Adafruit_NeoPixel(LED_COUNT, PIN, NEO_GRB + NEO_KHZ800);
 
 void clearLEDs();
-void Wave(int, uint32_t);
+void Wave(int, uint32_t, uint32_t);
 String mode;
 int pos = 0;
 
@@ -20,16 +20,9 @@ void setup()
 	leds.setBrightness(99);
 	leds.show();
 	
-	Wave(0, RED);
-	Wave(1, GREEN);
-	Wave(0, BLUE);
-
-	for (auto i = 36; i >= 0; i--)
-	{
-		leds.setPixelColor(i, WHITE);
-		leds.show();
-		delay(DELAY);
-	}
+	Wave(0, RED, BLACK);
+	Wave(1, GREEN, BLACK);
+	Wave(0, BLUE, WHITE);
 }
 
 void loop()
@@ -37,46 +30,22 @@ void loop()
   if(mode == "rainbow"){
     rainbow(pos);
     pos++;
-    delay(DELAY );
+    delay(DELAY * 5);
   }
   
 	if (Serial.available() > 0) {
 		auto incomingByte = Serial.read();
 		Serial.println(incomingByte, DEC);
-
+    
 		switch(incomingByte)
 		{
-			case 48: // 0
-				for (auto i = 0; i <= 36; i++)
-				{
-					leds.setPixelColor(i, RED);
-					leds.show();
-					delay(DELAY);
-				}
-				delay(DELAY * 3);
-				for (auto i = 36; i >= 0; i--)
-				{
-					leds.setPixelColor(i, BLACK);
-					leds.show();
-					delay(DELAY);
-				}
-				mode = "off";
+			case 48:
+			  Wave(1, RED, BLACK);
+			  mode = "off";
 				break;
-			case 49: // 1
-				for (auto i = 0; i <= 36; i++)
-				{
-					leds.setPixelColor(i, GREEN);
-					leds.show();
-					delay(DELAY);
-				}
-				delay(DELAY * 3);
-				for (auto i = 36; i >= 0; i--)
-				{
-					leds.setPixelColor(i, WHITE);
-					leds.show();
-					delay(DELAY);
-				}
-				mode = "on";
+			case 49:
+			  Wave(0, GREEN, WHITE);
+			  mode = "on";
 				break;
 			case 50:
   			mode = "rainbow";
@@ -91,7 +60,7 @@ void loop()
 	}
 }
 
-void Wave(int direction, uint32_t color)
+void Wave(int direction, uint32_t color, uint32_t colorBehind)
 {
   if(direction == 0)
   {
@@ -105,19 +74,19 @@ void Wave(int direction, uint32_t color)
   		else
   		{
   			leds.setPixelColor(i, color);
-  			leds.setPixelColor(i - 3, BLACK);
+  			leds.setPixelColor(i - 3, colorBehind);
   			leds.show();
   		}
   
   		if (i == 36)
   		{
-  			leds.setPixelColor(i - 2, BLACK);
+  			leds.setPixelColor(i - 2, colorBehind);
   			leds.show();
   			delay(50);
-  			leds.setPixelColor(i - 1, BLACK);
+  			leds.setPixelColor(i - 1, colorBehind);
   			leds.show();
   			delay(50);
-  			leds.setPixelColor(i, BLACK);
+  			leds.setPixelColor(i, colorBehind);
   			leds.show();
   		}
   
@@ -134,19 +103,19 @@ void Wave(int direction, uint32_t color)
   		else
   		{
   			leds.setPixelColor(i, color);
-  			leds.setPixelColor(i + 3, BLACK);
+  			leds.setPixelColor(i + 3, colorBehind);
   			leds.show();
   		}
   
   		if (i == 0)
   		{
-  			leds.setPixelColor(i + 2, BLACK);
+  			leds.setPixelColor(i + 2, colorBehind);
   			leds.show();
   			delay(DELAY);
-  			leds.setPixelColor(i + 1, BLACK);
+  			leds.setPixelColor(i + 1, colorBehind);
   			leds.show();
   			delay(DELAY);
-  			leds.setPixelColor(i, BLACK);
+  			leds.setPixelColor(i, colorBehind);
   			leds.show();
   		}
   
