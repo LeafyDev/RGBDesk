@@ -35,16 +35,15 @@ namespace ArduinoSerial
 
         private static bool SetComPort()
         {
-            var success = false;
             var ports = SerialPort.GetPortNames();
             foreach (var port in ports)
             {
                 _currentPort = new SerialPort(port, 115200);
                 if (DetectArduino())
-                    success = true;
+                    return true;
             }
 
-            return success;
+            return false;
         }
 
         private static bool DetectArduino()
